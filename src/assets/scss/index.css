@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.n-layout{
+    height: 100vh;
+}
+.n-layout-scroll-container{
+    height: 100%;
+}
+
+@keyframes openleft{
+    from {left:0px;}
+    to {left:-60%;}
+}
+
+@keyframes openright {
+    from {left:0px;}
+    to {left:60%;}
+}
+
+@keyframes opencenter {
+    0%{
+        transform: scale(0);
+    }
+    30%{
+        transform: scale(0);
+    }
+    100%{
+        transform: scale(1.2);
+    }
+}

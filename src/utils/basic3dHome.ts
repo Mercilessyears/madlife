@@ -1,0 +1,286 @@
+import * as THREE from "three";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import gsap from "gsap";
+import { MeshBasicMaterial } from "three";
+const hdrUrl = 'api/hdr/'
+const imgUrl = 'api/imgs/'
+const glbUrl = 'api/'
+export interface IBasic3d {
+  unResize: () => void;
+}
+const scroll_count = 0.2
+class Basic3dHome {
+  container: HTMLElement | null;
+  scene!: THREE.Scene;
+  camera!: THREE.PerspectiveCamera;
+  renderer!: THREE.WebGL1Renderer;
+  controls!: OrbitControls;
+  model!: THREE.Object3D;
+  panzi: THREE.Object3D | null = null;
+  mixer!: THREE.AnimationMixer;
+  progressFn!: (e:any) => void;
+  onFinish!: (e: any) => void;
+  animateAction!: THREE.AnimationAction;
+  ambLight:THREE.AmbientLight
+  spotlight1!: THREE.AmbientLight;
+  spotlight2!: THREE.AmbientLight;
+  spotlight3!: THREE.AmbientLight;
+  clock!: THREE.Clock;
+  timeoutId: NodeJS.Timeout | null=null;
+  mouse: THREE.Vector2
+  windowHalfX: number;
+  windowHalfY: number;
+  yScene:number=-0.3
+  yScene1:number=1.3
+  effectComposer: any;
+  constructor(selector: string, onFinish: (e:string) => void) {
+    this.container = document.getElementById(selector);
+    this.clock = new THREE.Clock()
+    this.ambLight = new THREE.AmbientLight('#22333d') //22333d
+    this.mouse = new THREE.Vector2(0,0)
+    this.windowHalfX = window.innerWidth /2
+    this.windowHalfY = window.innerHeight /2
+    this.init();
+    this.animate();
+    this.onFinish = onFinish;
+    
+  }
+
+  init() {
+    this.initScene();
+    this.initCamera();
+    this.initRenderer();
+    // this.initControls()
+    //添加展示物体
+    // this.addMesh();
+    this.onResize();
+    this.initAxesHelper()
+    // 监听滚轮事件
+    window.addEventListener('wheel',this.onMouseWheel.bind(this))
+    window.addEventListener('mousemove',this.onDocumentMouse.bind(this))
+  }
+  onProgress(fn:any){
+    this.progressFn=fn
+  }
+  initAxesHelper(){
+    const axes = new THREE.AxesHelper(10)
+    this.scene.add(axes)
+  }
+  async addMesh(url:string,urlScreen:string) {
+    let res = await this.setModel(url,urlScreen); // Macbookpro2.glb  beethoven animation  room female.glb
+    this.onFinish(res);
+  }
+  initControls() {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+  }
+  initRenderer() {
+    this.renderer = new THREE.WebGL1Renderer({
+      antialias: true, // 抗锯齿
+    });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    // 渲染尺寸
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setClearColor('#22333d')
+    // 色调映射
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    // 曝光程度
+    this.renderer.toneMappingExposure = 3;
+    this.container?.appendChild(this.renderer.domElement);
+    // this.effectComposer = new EffectComposer(this.renderer)
+    // const renderPass = new RenderPass(this.scene,this.camera)
+    // this.effectComposer.addPass(renderPass)
+    // const outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth,window.innerHeight),this.scene,this.camera)
+    // this.effectComposer.addPass(outlinePass)
+    this.render();
+  }
+  initCamera() {
+    this.camera = new THREE.PerspectiveCamera(
+      50,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      200
+    );
+
+    this.camera.position.set(-0.2, 1.3,-0.3);
+
+  }
+  initScene() {
+    this.scene = new THREE.Scene();
+    // this.setEnvMap("000");
+    this.initLight()
+    this.initJsonMesh()
+  }
+  initBufferMesh(){
+    const buf = new THREE.BufferGeometry()
+
+  }
+  initJsonMesh(){
+
+    let loader = new THREE.BufferGeometryLoader()
+    
+    // loader.load('./files/imgs/buffers.buf',(geo)=>{
+    //   console.log(geo);
+      
+    // })
+    // console.log(loaderMesh);
+    
+    // this.scene.add(loaderMesh)
+    
+  }
+  onDocumentMouse(e:MouseEvent){
+    this.mouse.x=(e.clientX/window.innerWidth)-0.5
+    this.mouse.y=(e.clientY/window.innerHeight)-0.5
+  }
+  transformCamera(){
+    gsap.to(this.camera.position,{
+      duration:2,
+      // y:1,
+      z:-1
+    })
+  }
+  // 设置环境
+  setEnvMap(hdr: string) {
+    new RGBELoader()
+      .setPath("./files/hdr/")
+      .load(hdr + ".hdr", (texture: any) => {
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        this.scene.background = texture;
+        this.scene.environment = texture;
+      });
+  }
+  render() {
+    let delta = this.clock && this.clock.getDelta()
+    this.mixer && this.mixer.update(delta)
+    // this.camera.position.x += (this.mouse.x- this.camera.position.x) *0.1
+    // this.camera.position.y += (-this.mouse.y - this.camera.position.y) *0.1
+    // this.camera.position.z += -0.01
+    // console.log(this.camera.position.x);
+    // if(this.yScene >=2){
+
+    //   this.camera.lookAt(this.scene.position)
+    // }
+    this.renderer.render(this.scene, this.camera);
+  }
+  animate() {
+    window.requestAnimationFrame(this.animate.bind(this))
+    this.render()
+    // this.effectComposer.render()
+    // this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+  onResize() {
+    window.addEventListener("resize", this.resize.bind(this));
+  }
+  unResize() {
+    window.removeEventListener("resize", this.resize.bind(this));
+  }
+  resize() {
+    this.windowHalfX = window.innerWidth / 2;
+    this.windowHalfY = window.innerHeight / 2;
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+  initLight(){
+    this.ambLight.intensity=1
+    this.scene.add(this.ambLight)
+    const dirLight = new THREE.DirectionalLight('#0f100f',0.5) //  #192221
+    this.scene.add(dirLight)
+
+    // 点光源
+    const spotLight = new THREE.SpotLight('#0f1010', 1, 10)
+    spotLight.position.set(-1,6,-1)
+    this.scene.add(spotLight)
+    // 
+    const sp1 = new THREE.SpotLight('#0b2515',0.5,1)
+    sp1.position.set(0,0.6,0.5)
+    this.scene.add(sp1)
+  }
+  async setTextures(url:string){
+    const imgLoader = new THREE.TextureLoader()
+    // const imgs = imgLoader.load(`${imgUrl}love.jpg`)
+    const imgs = await imgLoader.loadAsync(url)
+    imgs.rotation=Math.PI/2
+    imgs.flipY = false
+    imgs.center=new THREE.Vector2(0.5,0.5)
+    return imgs
+  }
+  async setModel(modelName: string,urlScreen:string) {
+    const imgs = await this.setTextures(urlScreen)
+    return new Promise((resolve) => {
+      const loader = new GLTFLoader()
+      loader.load(modelName, (gltf) => {
+
+        // this.model && this.model.removeFromParent();
+
+        this.model = gltf.scene.children[0];
+        const screen = gltf.scene.children[2] as any
+        const wall = gltf.scene.children[10] as any
+        // screen.material.emissive = screen.material.color
+
+        // screen.material.emissive = new THREE.Color('#f1010')
+        screen.material = new MeshBasicMaterial({
+          map:imgs
+        })
+
+        wall.material.emissive = new THREE.Color('#0f1010')
+
+        this.scene.add(gltf.scene);
+        console.log(this.scene);
+        
+        resolve(modelName+"模型添加成功")
+      },(e)=>{
+        this.progressFn && this.progressFn(e)
+      });
+    });
+  }
+  async checkoutImg(url:string){
+    const imgLoader = new THREE.TextureLoader()
+    const img = await imgLoader.load(url)
+    img.rotation=Math.PI/2
+    img.flipY = false
+    img.center=new THREE.Vector2(0.5,0.5)
+    //@ts-ignore
+    this.scene.children[5].children[2].material = new THREE.MeshBasicMaterial({
+      map:img
+    })
+    this.scene.updateMatrix()
+  }
+  onMouseWheel(e:WheelEvent){
+    let timeScale = e.deltaY > 0 ? 1 : -1
+    if(timeScale==-1){
+        if(this.yScene >= -0.2 && this.yScene <=2.5) {
+
+          this.yScene -= scroll_count
+          if(this.yScene< -0.2) this.yScene = -0.2
+          this.camera.position.z = this.yScene
+        }
+        if(this.yScene >= 1.5 && this.yScene <=2.5){
+          this.yScene1 +=0.1
+          this.camera.lookAt(-0.2,this.yScene1,0)
+        }
+      // this.camera.translateZ(-0.1)
+    } else {
+      if (this.yScene <2.5) {
+        this.yScene += scroll_count
+        if(this.yScene>2.5) this.yScene = 2.5
+        this.camera.position.z = this.yScene
+      }
+      if (this.yScene >= 1.5 && this.yScene <2.5) {
+        this.yScene1 -=0.1
+        this.camera.lookAt(-0.2,this.yScene1,0)
+      }
+
+        }
+
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId)
+    }
+    // this.timeoutId = setTimeout(() => {
+    //   this.animateAction.halt(0.5)
+    // }, 300);
+  }
+}
+
+export default Basic3dHome;
