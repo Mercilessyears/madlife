@@ -9,10 +9,10 @@ export default defineConfig({
   },
   server:{
     proxy:{
-      '/api': {
+      '/backend': {
         target: 'http://rcwonz1wg.hn-bkt.clouddn.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        rewrite: (path) => path.replace(/^\/backend/, '')
       }
     }
   },

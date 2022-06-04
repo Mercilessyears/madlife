@@ -99,6 +99,7 @@ import {productList,hdrList, IProduct} from '@/source/shop'
 import { NCard,NSpin,NProgress,NButton,NIcon, useMessage } from 'naive-ui';
 import {ArrowLeftOutlined,ShoppingCartOutlined,ArrowUpOutlined,ArrowDownOutlined} from '@vicons/antd'
 import { useRouter } from 'vue-router';
+import { getGlbData } from '@/myApi/scene';
 
 const products = ref(productList)
 const scenes = ref(hdrList)
@@ -111,18 +112,27 @@ const showTip = ref(true)
 const data = reactive({
     loading:false,
     progress:0,
-    basic3d:{} as any,
+    basic3d:null as unknown as BasicModel,
     descIndex:0,
     isFullScreen:false
 })
+const sourceUrl = ref<{name:string,src:string}[]>([])
 const descList = computed(()=>{
     const cur = productList.filter(it=>it.id===activeName.value) || []
     return cur[0]?.desc || []
 })
-function handleCard(pro:IProduct){
+async function handleCard(pro:IProduct){
     data.loading = true
     activeName.value = pro.id
-    data.basic3d.setModel(pro.modelName).then(()=>{
+    let url = ''
+    const num= sourceUrl.value.findIndex(it=>it.name === pro.modelName)
+    if (num > -1) {
+        url = sourceUrl.value[num].src
+    } else {
+        url = await getGlbData(`/${pro.modelName}`) as string
+        sourceUrl.value.push({name:pro.modelName,src:url})
+    }
+    data.basic3d.setModel(url).then(()=>{
         data.loading = false
     })
     data.basic3d.onProgress(progressFn)
@@ -133,9 +143,17 @@ function handleBack(){
 function handleCast(){
     message.success('添加成功')
 }
-function handleScene(scene:string,index:number){
+async function handleScene(scene:string,index:number){
     sceneActiveName.value=scene
-    data.basic3d.setEnvMap(scene)
+    let url = ''
+    const num= sourceUrl.value.findIndex(it=>it.name === scene)
+    if (num > -1) {
+        url = sourceUrl.value[num].src
+    } else {
+        url = await getGlbData(`/hdr/${scene}.hdr`)
+        sourceUrl.value.push({name:scene,src:url})
+    }
+    data.basic3d.setEnvMap(url)
 }
 function initAction(){
     const first = productList[0]
@@ -153,11 +171,19 @@ function progressFn(e:any){
     
     
 }
-function initScene(){
+async function initScene(){
     data.loading = true
     initAction()
+    // 请求数据
+    const sceneUrl = await getGlbData('/bag2.glb')
     data.basic3d = new Basic3d('shopScene',onFinish)
+    sourceUrl.value.push({name:'bag2.glb',src:sceneUrl})
+    // 初始化scene
+    data.basic3d.addMesh(sceneUrl)
     data.basic3d.onProgress(progressFn)
+    const sceneUr2 = await getGlbData('/hdr/000.hdr')
+    sourceUrl.value.push({name:'000',src:sceneUr2})
+    data.basic3d.setEnvMap(sceneUr2)
     mouseEvent()
     
 }
@@ -167,6 +193,7 @@ function onFinish(str:string){
 }
 function mouseEvent(){
     window.addEventListener('wheel',(e:any)=>{
+        //@ts-ignore
         let duration = data.basic3d.animateAction._clip.duration
         let time = data.basic3d.animateAction.time
         let index = Math.floor((time/duration)*4)

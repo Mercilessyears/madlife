@@ -35,6 +35,7 @@ class Basic3dHome {
   yScene:number=-0.3
   yScene1:number=1.3
   effectComposer: any;
+  requestAnimationId: null|number;
   constructor(selector: string, onFinish: (e:string) => void) {
     this.container = document.getElementById(selector);
     this.clock = new THREE.Clock()
@@ -45,7 +46,7 @@ class Basic3dHome {
     this.init();
     this.animate();
     this.onFinish = onFinish;
-    
+    this.requestAnimationId = null
   }
 
   init() {
@@ -110,25 +111,8 @@ class Basic3dHome {
     this.scene = new THREE.Scene();
     // this.setEnvMap("000");
     this.initLight()
-    this.initJsonMesh()
   }
-  initBufferMesh(){
-    const buf = new THREE.BufferGeometry()
 
-  }
-  initJsonMesh(){
-
-    let loader = new THREE.BufferGeometryLoader()
-    
-    // loader.load('./files/imgs/buffers.buf',(geo)=>{
-    //   console.log(geo);
-      
-    // })
-    // console.log(loaderMesh);
-    
-    // this.scene.add(loaderMesh)
-    
-  }
   onDocumentMouse(e:MouseEvent){
     this.mouse.x=(e.clientX/window.innerWidth)-0.5
     this.mouse.y=(e.clientY/window.innerHeight)-0.5
@@ -136,7 +120,6 @@ class Basic3dHome {
   transformCamera(){
     gsap.to(this.camera.position,{
       duration:2,
-      // y:1,
       z:-1
     })
   }
@@ -153,21 +136,11 @@ class Basic3dHome {
   render() {
     let delta = this.clock && this.clock.getDelta()
     this.mixer && this.mixer.update(delta)
-    // this.camera.position.x += (this.mouse.x- this.camera.position.x) *0.1
-    // this.camera.position.y += (-this.mouse.y - this.camera.position.y) *0.1
-    // this.camera.position.z += -0.01
-    // console.log(this.camera.position.x);
-    // if(this.yScene >=2){
-
-    //   this.camera.lookAt(this.scene.position)
-    // }
     this.renderer.render(this.scene, this.camera);
   }
   animate() {
-    window.requestAnimationFrame(this.animate.bind(this))
+    this.requestAnimationId = window.requestAnimationFrame(this.animate.bind(this))
     this.render()
-    // this.effectComposer.render()
-    // this.renderer.setAnimationLoop(this.render.bind(this));
   }
   onResize() {
     window.addEventListener("resize", this.resize.bind(this));
@@ -197,17 +170,17 @@ class Basic3dHome {
     sp1.position.set(0,0.6,0.5)
     this.scene.add(sp1)
   }
-  async setTextures(url:string){
+  setTextures(url:string){
     const imgLoader = new THREE.TextureLoader()
     // const imgs = imgLoader.load(`${imgUrl}love.jpg`)
-    const imgs = await imgLoader.loadAsync(url)
+    const imgs = imgLoader.load(url)
     imgs.rotation=Math.PI/2
     imgs.flipY = false
     imgs.center=new THREE.Vector2(0.5,0.5)
     return imgs
   }
   async setModel(modelName: string,urlScreen:string) {
-    const imgs = await this.setTextures(urlScreen)
+    const imgs = this.setTextures(urlScreen)
     return new Promise((resolve) => {
       const loader = new GLTFLoader()
       loader.load(modelName, (gltf) => {
@@ -280,6 +253,14 @@ class Basic3dHome {
     // this.timeoutId = setTimeout(() => {
     //   this.animateAction.halt(0.5)
     // }, 300);
+  }
+  clearThree(){
+    if (this.requestAnimationId) {
+      window.cancelAnimationFrame(this.requestAnimationId)
+    }
+    this.scene.clear()
+    //@ts-ignore
+    this.scene=null
   }
 }
 

@@ -23,7 +23,6 @@ class Basic3d {
   spotlight3!: THREE.AmbientLight;
   clock!: THREE.Clock;
   timeoutId: NodeJS.Timeout | null=null;
-  requestAnimationId: any;
 
   constructor(selector: string, onFinish: (e:string) => void) {
     this.container = document.getElementById(selector);
@@ -39,6 +38,7 @@ class Basic3d {
     this.initRenderer();
     // this.initControls()
     //添加展示物体
+    this.addMesh();
     this.onResize();
     // 监听滚轮事件
     window.addEventListener('wheel',this.onMouseWheel.bind(this))
@@ -47,8 +47,8 @@ class Basic3d {
     this.progressFn=fn
   }
 
-  async addMesh(url:string) {
-    let res = await this.setModel(url); // Macbookpro2.glb  "bag2.glb"
+  async addMesh() {
+    let res = await this.setModel("bag2.glb"); // Macbookpro2.glb 
     this.onFinish(res);
   }
   initControls() {
@@ -79,11 +79,13 @@ class Basic3d {
   }
   initScene() {
     this.scene = new THREE.Scene();
+    this.setEnvMap("000");
   }
   // 设置环境
   setEnvMap(hdr: string) {
     new RGBELoader()
-      .load(hdr, (texture: any) => {
+      .setPath("api/hdr/")
+      .load(hdr + ".hdr", (texture: any) => {
         texture.mapping = THREE.EquirectangularReflectionMapping;
         this.scene.background = texture;
         this.scene.environment = texture;
@@ -113,12 +115,11 @@ class Basic3d {
     return new Promise((resolve) => {
       const loader = new GLTFLoader()
       // loader.setMeshoptDecoder(MeshoptDecoder)
-      loader.load(modelName, (gltf) => {
+      loader.load(`api/${modelName}`, (gltf) => {
         
         this.model && this.model.removeFromParent();
         this.model = gltf.scene.children[0];
-
-        if (gltf.scene.children.length > 2 && !this.panzi) {
+        if ("bag2.glb" == modelName && !this.panzi) {
           this.panzi = gltf.scene.children[5];
           // 修改摄像头为模型摄像头
           this.camera = gltf.cameras[0] as THREE.PerspectiveCamera;
@@ -132,7 +133,7 @@ class Basic3d {
           // 播放动画
           // this.animateAction.play()
         }
-        if (gltf.scene.children.length > 2) {
+        if ("bag2.glb" == modelName) {
           // 设置灯光
           this.spotlight1 = gltf.scene.children[2].children[0] as THREE.AmbientLight;
           this.spotlight1.intensity = 1;
@@ -161,14 +162,6 @@ class Basic3d {
     this.timeoutId = setTimeout(() => {
       this.animateAction.halt(0.5)
     }, 300);
-  }
-  clearThree(){
-    if (this.requestAnimationId) {
-      window.cancelAnimationFrame(this.requestAnimationId)
-    }
-    this.scene.clear()
-    //@ts-ignore
-    this.scene=null
   }
 }
 

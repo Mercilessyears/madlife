@@ -1,7 +1,7 @@
 <template>
     <NLayout class="w-layout">
         <NLayoutHeader bordered class="flex items-center px-5">
-            <NMenu mode="horizontal" :options="menuOptions">
+            <NMenu mode="horizontal" :options="menuOptions" :value="$route.path">
             </NMenu>
 
             <!-- 右侧切换主题 -->
@@ -46,12 +46,12 @@ function renderRouter(name:string,label:string){
 const menuOptions:MenuOption[] = [
     {
         label:renderRouter('scene','主页'),
-        key:'scene',
+        key:'/scene',
         icon: renderIcon(HomeOutlined)
     },
     {
         label:renderRouter('project','项目'),
-        key:'project',
+        key:'/project',
         icon: renderIcon(AppstoreOutlined)
     }
 ]

@@ -1,14 +1,17 @@
 <template>
-<n-spin :show="loading">
+<n-spin :show="loading" class="h-screen">
     <div class="home-scene">
 
         <div id="myHome"></div>
         <div class="content-wrapper">
             <div class="header">
                 <div class="flex items-center justify-between mx-12">
-                    <div class="font-serif text-xl select-none title">
-                        wjb
-                    </div>
+                    <n-gradient-text
+                        class="font-serif text-3xl select-none title"
+                        gradient="linear-gradient(90deg, red 0%, green 50%, blue 100%)"
+                    >
+                        MADLIFE
+                    </n-gradient-text>
                     <div class="flex">
                         <div class="item"  :class="m.path === $route.path? 'active' :'' " v-for="m in menu" :key="m.path" @click="handleMenu(m)">
                             {{m.name}}
@@ -46,8 +49,8 @@
 </template>
 
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
-import {NIcon} from 'naive-ui'
+import {onBeforeUnmount, onMounted, reactive, ref} from 'vue'
+import {NIcon,NSpin,NGradientText} from 'naive-ui'
 import Basic3dHome from '@/utils/basic3dHome'
 import { RouteLocationRaw, useRouter } from 'vue-router';
 import {PhoneOutlined,MailOutlined,ArrowsAltOutlined} from '@vicons/antd'
@@ -57,19 +60,28 @@ const menu = [
     {name:'主页',path:'/scene',key:'1'},
     {name:'项目',path:'/project',key:'2'},
 ]
-const desList=[
-    {key:'1',title:'个人简介',des:''},
-    {key:'2',title:'个人简介1',des:''},
-    {key:'3',title:'个人简介2',des:''},
-]
+const urllist=ref([
+    {name:'love.jpg',text:'永远爱编程',src:""},
+    {name:'VUE.jpg',text:'永远爱vue,src:""'},
+    {name:'rect.jpg',text:'永远爱react',src:""},
+    {name:'node.jpg',text:'永远爱nodejs',src:""},
+    {name:'flutter.jpg',text:'永远爱flutter',src:""},
+])
 const router = useRouter()
 const iconRef = ref()
-const loading = ref(false)
+const loading = ref(true)
 const data = reactive({
     scene:null as any
 })
 function onFinish(){
     loading.value=false
+}
+async function getPicList(){
+    const promiseAll = urllist.value.map(it=>getGlbData(`/imgs/${it.name}`).catch(()=>{}))
+    const ul = await Promise.all(promiseAll) as string[]
+    urllist.value.forEach((el,index) => {
+        el.src = ul[index]
+    });
 }
 function handleMenu(item: any){
     router.push(item.path)
@@ -81,22 +93,25 @@ async function initFunc(){
         repeat:-1
     })
     loading.value=true
+    getPicList()
+    // 加载scene
     const url = await getGlbData('/scene.glb')
-    const url1 = await getGlbData('/imgs/love.jpg')
-
+    const url1 = urllist.value[0].src
     data.scene = new Basic3dHome('myHome',onFinish)
     data.scene.addMesh(url,url1)
 }
 async function moveEnter(id:string){
-    const url = await getGlbData(`/imgs/${id}`)
+    const url = urllist.value.filter(it=>it.name === id)[0].src
     data.scene.checkoutImg(url)
 }
 async function moveLeave(){
-    const url = await getGlbData('/imgs/love.jpg')
+    const url =  urllist.value[0].src
     data.scene.checkoutImg(url)
 }
 onMounted(initFunc)
-
+onBeforeUnmount(() => {
+  data.scene.clearThree()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -114,9 +129,13 @@ $active:aquamarine;
         transition: all 0.5s ease;
     }
 }
+
     .home-scene{
         position: relative;
         height: 100%;
+        & :deep(.n-spin-container){
+            background-color: black;
+        }
         #myHome{
             height: 100%;
         }
@@ -134,6 +153,7 @@ $active:aquamarine;
                 top: 45px;
                 width: 100%;
                 color: white;
+                z-index: 10;
                 div{
                     box-sizing: border-box;
                 }
