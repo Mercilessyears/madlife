@@ -175,8 +175,8 @@ async function initScene(){
     data.loading = true
     initAction()
     // 请求数据
-    const sceneUrl = await getGlbData('/bag2.glb')
-    // const sceneUrl = 'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/bag2.glb'
+    // const sceneUrl = await getGlbData('/bag2.glb')
+    const sceneUrl = 'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/bag2.glb'
     data.basic3d = new Basic3d('shopScene',onFinish)
     sourceUrl.value.push({name:'bag2.glb',src:sceneUrl})
     // 初始化scene

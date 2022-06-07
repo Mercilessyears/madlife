@@ -5,7 +5,8 @@ const path = require('path')
 
 // https://vitejs.dev/config/   https://mercilessyears.github.io/madlife/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? 'https://www.madlife.work/' : '/',
+  // base: process.env.NODE_ENV === 'production' ? 'https://www.madlife.work/' : '/',
+  base: './',
   build:{
   },
   server:{
