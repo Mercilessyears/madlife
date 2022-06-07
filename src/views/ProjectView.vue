@@ -38,7 +38,7 @@ const projects = ref<IProjectInfo[]>([
         name:'智慧城市',
         id:2,
         routeName:'building',
-        projectId:'build'
+        projectId:'building'
     }
 ])
 const router = useRouter()

@@ -50,7 +50,7 @@ const menuOptions:MenuOption[] = [
         icon: renderIcon(HomeOutlined)
     },
     {
-        label:renderRouter('project','项目'),
+        label:renderRouter('project','示例项目'),
         key:'/project',
         icon: renderIcon(AppstoreOutlined)
     }

@@ -27,10 +27,12 @@
     "@types/three": "^0.140.0",
     "@vicons/antd": "^0.12.0",
     "@vitejs/plugin-vue": "^2.3.3",
+    "cesium": "^1.94.0",
     "naive-ui": "^2.29.0",
     "sass": "^1.51.0",
     "typescript": "^4.5.4",
     "vite": "^2.9.9",
+    "vite-plugin-cesium": "^1.2.19",
     "vue-tsc": "^0.34.7"
   }
 }

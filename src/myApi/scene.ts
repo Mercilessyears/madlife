@@ -11,3 +11,9 @@ function createUrl(data:Blob){
     const url = window.URL.createObjectURL(blob)
     return url
 }
+
+export  async function getJsonData(url:string){
+    const data = await defHttp.get(url)
+    const src = createUrl(data.data)
+    return src
+}

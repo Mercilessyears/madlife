@@ -8,6 +8,9 @@
 .n-layout-scroll-container{
     height: 100%;
 }
+.n-config-provider{
+    height: 100vh;
+}
 
 @keyframes openleft{
     from {left:0px;}
