@@ -21,7 +21,9 @@
             </div>
         </NLayoutHeader>
         <NLayoutContent class="flex-1">
-            <router-view></router-view>
+            <keep-alive>
+                <router-view></router-view>
+            </keep-alive>
         </NLayoutContent>
     </NLayout>
 </template>
@@ -39,18 +41,18 @@ function renderIcon(icon:Component){
 function renderRouter(name:string,label:string){
     return ()=> h(RouterLink,{
         to:{
-            name
+            path:name
         }
     },{ default: () => label })
 }
 const menuOptions:MenuOption[] = [
     {
-        label:renderRouter('scene','主页'),
+        label:renderRouter('/scene','主页'),
         key:'/scene',
         icon: renderIcon(HomeOutlined)
     },
     {
-        label:renderRouter('project','示例项目'),
+        label:renderRouter('/project','示例项目'),
         key:'/project',
         icon: renderIcon(AppstoreOutlined)
     }

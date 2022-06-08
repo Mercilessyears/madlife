@@ -57,7 +57,7 @@ class Basic3dHome {
     //添加展示物体
     // this.addMesh();
     this.onResize();
-    this.initAxesHelper()
+    // this.initAxesHelper()
     // 监听滚轮事件
     window.addEventListener('wheel',this.onMouseWheel.bind(this))
     window.addEventListener('mousemove',this.onDocumentMouse.bind(this))
@@ -88,7 +88,18 @@ class Basic3dHome {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     // 曝光程度
     this.renderer.toneMappingExposure = 3;
+    const first = this.container?.firstChild
+    if(first){
+      this.container?.removeChild(first)
+    }
     this.container?.appendChild(this.renderer.domElement);
+    // const container = document.getElementById('homeSceneBox')
+    // const len = container?.children || []
+    // lens.value = len.length
+    // if (len?.length>=2) {
+    // const firstNode = container?.firstChild!
+    // container?.removeChild(firstNode)
+    // }
     // this.effectComposer = new EffectComposer(this.renderer)
     // const renderPass = new RenderPass(this.scene,this.camera)
     // this.effectComposer.addPass(renderPass)
@@ -215,7 +226,7 @@ class Basic3dHome {
     img.flipY = false
     img.center=new THREE.Vector2(0.5,0.5)
     //@ts-ignore
-    this.scene.children[5].children[2].material = new THREE.MeshBasicMaterial({
+    this.scene.children[4].children[2].material = new THREE.MeshBasicMaterial({
       map:img
     })
     this.scene.updateMatrix()
@@ -259,6 +270,7 @@ class Basic3dHome {
       window.cancelAnimationFrame(this.requestAnimationId)
     }
     this.scene.clear()
+    this.container = null
     //@ts-ignore
     this.scene=null
   }

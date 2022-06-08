@@ -2,13 +2,13 @@
 <n-spin :show="loading" class="h-screen">
     <div class="home-scene">
 
-        <div id="myHome"></div>
+        <div id="homeSceneBox"></div>
         <div class="content-wrapper">
             <div class="header">
                 <div class="flex items-center justify-between mx-12">
                     <n-gradient-text
                         class="font-serif text-3xl select-none title"
-                        gradient="linear-gradient(90deg, red 0%, green 50%, blue 100%)"
+                        gradient="linear-gradient(90deg, yellow 0%, pink 50%, red 100%)"
                     >
                         MADLIFE
                     </n-gradient-text>
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import {onBeforeUnmount, onMounted, reactive, ref} from 'vue'
+import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from 'vue'
 import {NIcon,NSpin,NGradientText} from 'naive-ui'
 import Basic3dHome from '@/utils/basic3dHome'
 import { RouteLocationRaw, useRouter } from 'vue-router';
@@ -97,7 +97,7 @@ async function initFunc(){
     // 加载scene
     const url = await getGlbData('/scene.glb')
     const url1 = urllist.value[0].src
-    data.scene = new Basic3dHome('myHome',onFinish)
+    data.scene = new Basic3dHome('homeSceneBox',onFinish)
     data.scene.addMesh(url,url1)
 }
 async function moveEnter(id:string){
@@ -111,6 +111,7 @@ async function moveLeave(){
 onMounted(initFunc)
 onBeforeUnmount(() => {
   data.scene.clearThree()
+  data.scene = null
 })
 </script>
 
