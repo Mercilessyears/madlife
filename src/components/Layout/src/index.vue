@@ -21,9 +21,7 @@
             </div>
         </NLayoutHeader>
         <NLayoutContent class="flex-1">
-            <keep-alive>
-                <router-view></router-view>
-            </keep-alive>
+            <router-view></router-view>
         </NLayoutContent>
     </NLayout>
 </template>

@@ -100,6 +100,7 @@ import { NCard,NSpin,NProgress,NButton,NIcon, useMessage } from 'naive-ui';
 import {ArrowLeftOutlined,ShoppingCartOutlined,ArrowUpOutlined,ArrowDownOutlined} from '@vicons/antd'
 import { useRouter } from 'vue-router';
 import { getGlbData } from '@/myApi/scene';
+import { TX_COS_URL } from '@/enums/commEnum';
 
 const products = ref(productList)
 const scenes = ref(hdrList)
@@ -150,7 +151,8 @@ async function handleScene(scene:string,index:number){
     if (num > -1) {
         url = sourceUrl.value[num].src
     } else {
-        url = await getGlbData(`/hdr/${scene}.hdr`)
+        url = `${TX_COS_URL}/hdr/${scene}.hdr`
+        // url = await getGlbData(`/hdr/${scene}.hdr`)
         sourceUrl.value.push({name:scene,src:url})
     }
     data.basic3d.setEnvMap(url)
@@ -176,13 +178,14 @@ async function initScene(){
     initAction()
     // 请求数据
     // const sceneUrl = await getGlbData('/bag2.glb')
-    const sceneUrl = 'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/bag2.glb'
+    const sceneUrl = `${TX_COS_URL}/bag2.glb`
     data.basic3d = new Basic3d('shopScene',onFinish)
     sourceUrl.value.push({name:'bag2.glb',src:sceneUrl})
     // 初始化scene
     data.basic3d.addMesh(sceneUrl)
     data.basic3d.onProgress(progressFn)
-    const sceneUr2 = await getGlbData('/hdr/000.hdr')
+    // const sceneUr2 = await getGlbData('/hdr/000.hdr')
+    const sceneUr2 = `${TX_COS_URL}/hdr/000.hdr`
     sourceUrl.value.push({name:'000',src:sceneUr2})
     data.basic3d.setEnvMap(sceneUr2)
     mouseEvent()

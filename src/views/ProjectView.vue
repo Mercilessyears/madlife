@@ -39,6 +39,13 @@ const projects = ref<IProjectInfo[]>([
         id:2,
         routeName:'building',
         projectId:'building'
+    },
+    {
+        src:'imgs/flutter_pro_img.jpeg',
+        name:'手机app开发(Flutter)',
+        id:3,
+        routeName:'flutterApp',
+        projectId:'flutterApp'
     }
 ])
 const router = useRouter()

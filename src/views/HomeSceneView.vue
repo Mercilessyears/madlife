@@ -55,13 +55,14 @@ import Basic3dHome from '@/utils/basic3dHome'
 import { RouteLocationRaw, useRouter } from 'vue-router';
 import {PhoneOutlined,MailOutlined,ArrowsAltOutlined} from '@vicons/antd'
 import gsap from 'gsap';
-import { getGlbData } from '@/myApi/scene';
+import { getGlbData, getTxData } from '@/myApi/scene';
+import { TX_COS_URL } from '@/enums/commEnum';
 const menu = [
     {name:'主页',path:'/scene',key:'1'},
     {name:'项目',path:'/project',key:'2'},
 ]
 const urllist=ref([
-    {name:'love.jpg',text:'永远爱编程',src:""},
+    {name:'love.jpg',text:'永远爱编程',src:`${TX_COS_URL}/imgs/love.jpg`},
     {name:'VUE.jpg',text:'永远爱vue,src:""'},
     {name:'rect.jpg',text:'永远爱react',src:""},
     {name:'node.jpg',text:'永远爱nodejs',src:""},
@@ -77,7 +78,7 @@ function onFinish(){
     loading.value=false
 }
 async function getPicList(){
-    const promiseAll = urllist.value.map(it=>getGlbData(`/imgs/${it.name}`).catch(()=>{}))
+    const promiseAll = urllist.value.map(it=>getTxData(`/imgs/${it.name}`).catch(()=>{}))
     const ul = await Promise.all(promiseAll) as string[]
     urllist.value.forEach((el,index) => {
         el.src = ul[index]
@@ -95,7 +96,8 @@ async function initFunc(){
     loading.value=true
     getPicList()
     // 加载scene
-    const url = await getGlbData('/scene.glb')
+    // const url = await getGlbData('/scene.glb')
+    const url = `${TX_COS_URL}/scene.glb`
     const url1 = urllist.value[0].src
     data.scene = new Basic3dHome('homeSceneBox',onFinish)
     data.scene.addMesh(url,url1)

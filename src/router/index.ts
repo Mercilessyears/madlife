@@ -33,7 +33,12 @@ const routes:RouteRecordRaw[] = [
         path:'/shop',
         name:'shop',
         component: ()=> import('@/views/ShopView.vue')
-    }
+    },
+    {
+        path:'/flutterApp',
+        name:'flutterApp',
+        component:()=>import(/**chunkName:FlutterAppView */ '@/views/FlutterAppView.vue')
+    },
 ]
 const router = createRouter({
     history:createWebHashHistory(),
