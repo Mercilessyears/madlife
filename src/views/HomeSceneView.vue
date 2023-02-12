@@ -23,7 +23,7 @@
                 <div class="main-scroll">
                     
                     <div class="desc1">
-                        <p class="item">我是一个<strong>「</strong>前端<strong>」</strong>爱好者，现居成都市，有三年相关从业经验！</p>
+                        <p class="item">我是一个<strong>「</strong>前端<strong>」</strong>爱好者，现居成都市，有四年相关从业经验！</p>
                         <div class="cursor-pointer item" @mouseenter="moveEnter('VUE.jpg')" @mouseleave="moveLeave">熟练<span class="text-lg font-bold text-red-400 "> Vue </span>及vue全家桶，可结合element-ui、vuetify、ant-design-vue等UI框架开发中后台网页</div>
                         <div class="cursor-pointer item" @mouseenter="moveEnter('rect.jpg')" @mouseleave="moveLeave">熟悉<span class="text-lg font-bold text-red-400 "> React </span> ，可结合Ant Design开发中后台网页</div>
                         <div class="cursor-pointer item" @mouseenter="moveEnter('node.jpg')" @mouseleave="moveLeave">熟练<span class="text-lg font-bold text-red-400 "> Flex </span>、Grid+HTML+CSS实现网页布局</div>

@@ -27,18 +27,25 @@ interface IProjectInfo{
 }
 const projects = ref<IProjectInfo[]>([
     {
-        src:'imgs/womenshoes.jpg',
+        src:'imgs/pag.jpg',
         name:'3d商城',
         id:1,
         routeName:'shop',
         projectId:'shop'
     },
+    // {
+    //     src:'imgs/building.jpg',
+    //     name:'智慧城市',
+    //     id:2,
+    //     routeName:'building',
+    //     projectId:'building'
+    // },
     {
-        src:'imgs/building.jpg',
-        name:'智慧城市',
-        id:2,
-        routeName:'building',
-        projectId:'building'
+        src:'imgs/suidao.jpg',
+        name:'智慧隧道',
+        id:4,
+        routeName:'tunnel',
+        projectId:'tunnel'
     },
     {
         src:'imgs/flutter_pro_img.jpeg',
