@@ -8,8 +8,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@kjgl77/datav-vue3": "^1.4.2",
     "autoprefixer": "^10.4.7",
     "axios": "^0.27.2",
+    "dat.gui": "^0.7.9",
     "gltf-pipeline": "^3.0.4",
     "gltfpack": "^0.17.0",
     "gsap": "^3.10.4",
@@ -24,6 +26,7 @@
     "vue-router": "4"
   },
   "devDependencies": {
+    "@types/dat.gui": "^0.7.7",
     "@types/three": "^0.140.0",
     "@vicons/antd": "^0.12.0",
     "@vitejs/plugin-vue": "^2.3.3",

@@ -39,6 +39,11 @@ const routes:RouteRecordRaw[] = [
         name:'flutterApp',
         component:()=>import(/**chunkName:FlutterAppView */ '@/views/FlutterAppView.vue')
     },
+    {
+        path:'/tunnel',
+        name:'tunnel',
+        component:()=>import(/**chunkName:TunnelView */ '@/views/TunnelView.vue')
+    },
 ]
 const router = createRouter({
     history:createWebHashHistory(),

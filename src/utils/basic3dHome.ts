@@ -36,7 +36,9 @@ class Basic3dHome {
   yScene1:number=1.3
   effectComposer: any;
   requestAnimationId: null|number;
-  constructor(selector: string, onFinish: (e:string) => void) {
+  isListen: boolean;
+  constructor(selector: string, onFinish: (e:string) => void,isListen:boolean=true) {
+    this.isListen=isListen
     this.container = document.getElementById(selector);
     this.clock = new THREE.Clock()
     this.ambLight = new THREE.AmbientLight('#22333d') //22333d
@@ -50,6 +52,8 @@ class Basic3dHome {
   }
 
   init() {
+    console.log('modelinit');
+    
     this.initScene();
     this.initCamera();
     this.initRenderer();
@@ -59,8 +63,11 @@ class Basic3dHome {
     this.onResize();
     // this.initAxesHelper()
     // 监听滚轮事件
-    window.addEventListener('wheel',this.onMouseWheel.bind(this))
-    window.addEventListener('mousemove',this.onDocumentMouse.bind(this))
+    console.log(this.isListen);
+    if(this.isListen){
+      window.addEventListener('wheel',this.onMouseWheel.bind(this))
+      window.addEventListener('mousemove',this.onDocumentMouse.bind(this))
+    }
   }
   onProgress(fn:any){
     this.progressFn=fn
@@ -80,6 +87,7 @@ class Basic3dHome {
     this.renderer = new THREE.WebGL1Renderer({
       antialias: true, // 抗锯齿
     });
+    // this.renderer.outputEncoding = THREE.sRGBEncoding
     this.renderer.setPixelRatio(window.devicePixelRatio);
     // 渲染尺寸
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -273,6 +281,26 @@ class Basic3dHome {
     this.container = null
     //@ts-ignore
     this.scene=null
+  }
+  getMoseObj(callback:Function,event:MouseEvent){
+    const raycaster = new THREE.Raycaster()
+    let mouse = new THREE.Vector2()
+    const divWidth = window.innerWidth
+    const divHeith = window.innerHeight
+    // 计算raycaster所需要的点位
+    mouse.x = event.clientX / divWidth * 2 -1
+    mouse.y = -(event.clientY / divHeith) *2 + 1
+    raycaster.setFromCamera(mouse,this.camera)
+    const instersects = raycaster.intersectObjects(this.scene.children)
+    if(instersects.length){
+      if(callback){
+        const returnMouse = {
+          x:event.clientX,
+          y:event.clientY
+        }
+        callback(instersects,returnMouse)
+      }
+    }
   }
 }
 
