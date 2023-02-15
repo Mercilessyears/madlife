@@ -99,7 +99,7 @@ import {productList,hdrList, IProduct} from '@/source/shop'
 import { NCard,NSpin,NProgress,NButton,NIcon, useMessage } from 'naive-ui';
 import {ArrowLeftOutlined,ShoppingCartOutlined,ArrowUpOutlined,ArrowDownOutlined} from '@vicons/antd'
 import { useRouter } from 'vue-router';
-import { getGlbData } from '@/myApi/scene';
+import { getGlbData, getTxData } from '@/myApi/scene';
 import { TX_COS_URL } from '@/enums/commEnum';
 
 const products = ref(productList)
@@ -130,7 +130,7 @@ async function handleCard(pro:IProduct){
     if (num > -1) {
         url = sourceUrl.value[num].src
     } else {
-        url = await getGlbData(`/${pro.modelName}`) as string
+        url = await getTxData(`/${pro.modelName}`) as string
         sourceUrl.value.push({name:pro.modelName,src:url})
     }
     data.basic3d.setModel(url).then(()=>{

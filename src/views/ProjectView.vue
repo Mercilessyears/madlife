@@ -15,9 +15,11 @@
 </template>
 
 <script lang="ts" setup>
+import { TX_COS_URL } from '@/enums/commEnum';
 import {NGrid,NGridItem,NCard} from 'naive-ui'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+
 interface IProjectInfo{
     src:string,
     name:string,
@@ -27,7 +29,7 @@ interface IProjectInfo{
 }
 const projects = ref<IProjectInfo[]>([
     {
-        src:'imgs/pag.jpg',
+        src:`${TX_COS_URL}/imgs/bag1.jpg`,
         name:'3d商城',
         id:1,
         routeName:'shop',
@@ -41,14 +43,14 @@ const projects = ref<IProjectInfo[]>([
     //     projectId:'building'
     // },
     {
-        src:'imgs/suidao.jpg',
+        src:`${TX_COS_URL}/imgs/suidao.jpg`,
         name:'智慧隧道',
         id:4,
         routeName:'tunnel',
         projectId:'tunnel'
     },
     {
-        src:'imgs/flutter_pro_img.jpeg',
+        src:`${TX_COS_URL}/imgs/flutter_pro_img.jpeg`,
         name:'手机app开发(Flutter)',
         id:3,
         routeName:'flutterApp',

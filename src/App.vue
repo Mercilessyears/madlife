@@ -1,7 +1,9 @@
 <template>
 <NConfigProvider :theme="theme">
   <Application>
-    <router-view></router-view>
+    <KeepAlive>
+      <router-view></router-view>
+    </KeepAlive>
   </Application>
 </NConfigProvider>
 </template>
