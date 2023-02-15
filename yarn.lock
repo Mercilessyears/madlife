@@ -1596,6 +1596,13 @@ vdirs@^0.1.4, vdirs@^0.1.8:
   dependencies:
     evtd "^0.2.2"
 
+vite-plugin-cdn-import@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.npmmirror.com/vite-plugin-cdn-import/-/vite-plugin-cdn-import-0.3.5.tgz#b9cfbb076fd2bc1e8ae666e65450a864972dee81"
+  integrity sha512-e1raoalfBiIhv+hnMeSp1UNjloDDBhHpeFxkwRRdPBmTdDRqdEEn8owUmT5u8UBSVCs4xN3n/od4a91vXEhXPQ==
+  dependencies:
+    rollup-plugin-external-globals "^0.6.1"
+
 vite-plugin-cesium@^1.2.19:
   version "1.2.19"
   resolved "https://registry.npmmirror.com/vite-plugin-cesium/-/vite-plugin-cesium-1.2.19.tgz#f6ecdbe8bdac11f5ed81c192a2d132382fad7f75"
