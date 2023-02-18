@@ -1,9 +1,11 @@
 <template>
 <NConfigProvider :theme="theme">
   <Application>
-    <KeepAlive>
-      <router-view></router-view>
-    </KeepAlive>
+      <router-view v-slot="{Component}">
+        <KeepAlive>
+          <component :is="Component"></component>
+        </KeepAlive>
+      </router-view>
   </Application>
 </NConfigProvider>
 </template>

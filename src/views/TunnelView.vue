@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import Basic3dHome from '@/utils/basic3dHome';
-import { getCurrentInstance, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref } from 'vue';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import * as THREE from 'three';
 import * as datGui from 'dat.gui'
@@ -168,10 +168,14 @@ function addModel(){
 
 onMounted(()=>{
     initFunc()
+    
+})
+onActivated(()=>{
     const getMouseFun = basic3d.getMoseObj.bind(basic3d,mouseClick)
     window.addEventListener('mousemove',getMouseFun)
-    onBeforeUnmount(() => {
+    onDeactivated(() => {
         window.removeEventListener('mousemove',getMouseFun)
+        dat.destroy()
     })
 })
 onBeforeUnmount(() => {
@@ -179,7 +183,7 @@ onBeforeUnmount(() => {
     basic3d.clearThree()
     basic3d.scene = null
     basic3d = null
-    dat.destroy()
+    
 })
 </script>
 

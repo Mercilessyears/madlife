@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import {nextTick, onBeforeUnmount, onMounted, reactive, ref} from 'vue'
+import {nextTick, onBeforeUnmount, onMounted, reactive, ref,onDeactivated,onActivated} from 'vue'
 import {NIcon,NSpin,NGradientText} from 'naive-ui'
 import Basic3dHome from '@/utils/basic3dHome'
 import { RouteLocationRaw, useRouter } from 'vue-router';
@@ -100,6 +100,7 @@ async function initFunc(){
     const url = `${TX_COS_URL}/scene.glb`
     const url1 = urllist.value[0].src
     data.scene = new Basic3dHome('homeSceneBox',onFinish)
+    // console.log(data.scene);
     data.scene.addMesh(url,url1)
 }
 async function moveEnter(id:string){
@@ -110,10 +111,22 @@ async function moveLeave(){
     const url =  urllist.value[0].src
     data.scene.checkoutImg(url)
 }
-onMounted(initFunc)
-onBeforeUnmount(() => {
-  data.scene.clearThree()
-  data.scene = null
+onMounted(()=>{
+    initFunc()
+})
+onBeforeUnmount(()=>{
+    data.scene.clearThree()
+    data.scene = null
+})
+onActivated(()=>{
+    const bindFunc = data.scene.onDocumentMouse.bind(data.scene)
+    const wheelBindFunc = data.scene.wheelChange.bind(data.scene)
+    window.addEventListener('mousemove',bindFunc)
+    window.addEventListener('wheel',wheelBindFunc)
+    onDeactivated(()=>{
+        window.removeEventListener('mousemove',bindFunc)
+        window.removeEventListener('wheel',wheelBindFunc)
+    })
 })
 </script>
 

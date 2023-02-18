@@ -22,6 +22,7 @@ class Basic3dHome {
   mixer!: THREE.AnimationMixer;
   progressFn!: (e:any) => void;
   onFinish!: (e: any) => void;
+  removeMouseListener!:()=>void;
   animateAction!: THREE.AnimationAction;
   ambLight:THREE.AmbientLight
   spotlight1!: THREE.AmbientLight;
@@ -37,6 +38,10 @@ class Basic3dHome {
   effectComposer: any;
   requestAnimationId: null|number;
   isListen: boolean;
+  mouseAnimationFlag:boolean=false;
+  mouseMoveFlag: boolean=false;
+  bindFunc!: any;
+  timeline!: gsap.core.Timeline;
   constructor(selector: string, onFinish: (e:string) => void,isListen:boolean=true) {
     this.isListen=isListen
     this.container = document.getElementById(selector);
@@ -48,6 +53,7 @@ class Basic3dHome {
     this.init();
     this.animate();
     this.onFinish = onFinish;
+    this.removeMouseListener=this.removeMouseListeners
     this.requestAnimationId = null
   }
 
@@ -65,9 +71,17 @@ class Basic3dHome {
     // 监听滚轮事件
     console.log(this.isListen);
     if(this.isListen){
-      window.addEventListener('wheel',this.onMouseWheel.bind(this))
-      window.addEventListener('mousemove',this.onDocumentMouse.bind(this))
+      // 初始化背景
+      this.loadBackHdr()
+      // window.addEventListener('wheel',this.onMouseWheel.bind(this))
+      
+      this.animationCamera()
     }
+  }
+  loadBackHdr(){
+    const textLoader = new THREE.TextureLoader()
+    const texture = textLoader.load('files/hdr/080.jpg')
+    this.scene.background = texture;
   }
   onProgress(fn:any){
     this.progressFn=fn
@@ -123,8 +137,56 @@ class Basic3dHome {
       200
     );
 
-    this.camera.position.set(-0.2, 1.3,-0.3);
+    this.camera.position.set(-0.2, 1.2,0.3);
+    // this.camera.position.set(0,0,0);
+    // this.camera.lookAt(-0.2, 1.3,-0.3)
 
+  }
+  animationCamera(){
+    this.timeline = gsap.timeline()
+    this.timeline.to(this.camera.position,{
+      // x:-0.2,
+      // y:1.3,
+      z:1.5,
+      duration:2,
+      onUpdate:this.onUpdateChange.bind(this)
+    })
+    .to(this.camera.position,{
+      z:2.5,
+      // y:1.,
+      duration:2,
+      onUpdate:this.onUpdateChange.bind(this),
+      onComplete:()=>{
+        this.mouseAnimationFlag=true
+      }
+    })
+  }
+  onUpdateChange(){
+    this.camera.lookAt(-0.2, 1.0,-0.3)
+  }
+  mouseMoveAnimate(){
+    if (this.isListen && this.mouseAnimationFlag && this.mouseMoveFlag){
+      let x = Number(this.camera.position.x.toFixed(3))
+      if(this.mouse.x < 0) {
+        if(x>-0.35) {
+          x-=0.002
+        } else {
+          x=-0.35
+          this.mouseMoveFlag=false
+        }
+      } else {
+        if(x<0) {
+          x+=0.002
+        } else {
+          x=0
+          this.mouseMoveFlag=false
+        }
+      }
+      // console.log(x);
+      
+      this.camera.position.setX(x)
+      this.onUpdateChange()
+    }
   }
   initScene() {
     this.scene = new THREE.Scene();
@@ -135,6 +197,9 @@ class Basic3dHome {
   onDocumentMouse(e:MouseEvent){
     this.mouse.x=(e.clientX/window.innerWidth)-0.5
     this.mouse.y=(e.clientY/window.innerHeight)-0.5
+    this.mouseMoveFlag = true
+    // console.log('mouse',this.mouse);
+    
   }
   transformCamera(){
     gsap.to(this.camera.position,{
@@ -159,6 +224,8 @@ class Basic3dHome {
   }
   animate() {
     this.requestAnimationId = window.requestAnimationFrame(this.animate.bind(this))
+    // this.controls.update();
+    this.mouseMoveAnimate()
     this.render()
   }
   onResize() {
@@ -219,8 +286,7 @@ class Basic3dHome {
         wall.material.emissive = new THREE.Color('#0f1010')
 
         this.scene.add(gltf.scene);
-        console.log(this.scene);
-        
+
         resolve(modelName+"模型添加成功")
       },(e)=>{
         this.progressFn && this.progressFn(e)
@@ -273,6 +339,7 @@ class Basic3dHome {
     //   this.animateAction.halt(0.5)
     // }, 300);
   }
+
   clearThree(){
     if (this.requestAnimationId) {
       window.cancelAnimationFrame(this.requestAnimationId)
@@ -300,6 +367,16 @@ class Basic3dHome {
         }
         callback(instersects,returnMouse)
       }
+    }
+  }
+  removeMouseListeners(){
+    window.removeEventListener('mousemove',this.bindFunc)
+  }
+  wheelChange(e:any){
+    if(e.wheelDelta > 0) {
+      this.timeline.reverse()
+    } else {
+      this.timeline.play()
     }
   }
 }
