@@ -1,7 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import viteCompression from 'vite-plugin-compression'
 import cesium from 'vite-plugin-cesium'; // 引入插件
 import PluginImportToCDN from 'vite-plugin-cdn-import';
+import { visualizer } from "rollup-plugin-visualizer";
 const path = require('path')
 
 // https://vitejs.dev/config/   https://mercilessyears.github.io/madlife/
@@ -98,6 +100,13 @@ export default defineConfig({
           path:'https://cdn.bootcdn.net/ajax/libs/vue-router/4.0.2/vue-router.global.min.js'
         }
       ]
+    }),
+    viteCompression(),
+    visualizer({
+      filename: 'report.html',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
     })
   ]
 })
