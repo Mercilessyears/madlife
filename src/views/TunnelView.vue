@@ -1,23 +1,31 @@
 <script lang="ts" setup>
 import Basic3dHome from '@/utils/basic3dHome';
-import { getCurrentInstance, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref } from 'vue';
+import { onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, ref } from 'vue';
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader'
 import * as THREE from 'three';
 import * as datGui from 'dat.gui'
 import { GUI } from 'dat.gui';
 import {BorderBox1 as DvBorderBox1,ScrollBoard,BorderBox13 as DvBorderBox13} from '@kjgl77/datav-vue3'
 import {ArrowLeftOutlined} from '@vicons/antd'
-import { NButton,NIcon} from 'naive-ui';
+import { NButton,NIcon, useMessage} from 'naive-ui';
 import { TX_COS_URL } from '@/enums/commEnum';
 import { useRouter } from 'vue-router';
+import { ThreePersonControls } from '@/utils/ThreePersonControls';
 
 
 const router = useRouter()
-
+const message = useMessage()
+const isPersonViewFlag = ref(false)
 let basic3d: any
 let sdObj = {
-    'opacity':0.5
+    'opacity':0.5,
+    'firstPerson':false
 }
+let getKeyDownFun:any,
+    getKeyUpFun:any;
+let animationMap=new Map(),
+    fObj:any;
 let dat:GUI
 let datItem: datGui.GUIController
 let gltfGlobal:THREE.Group
@@ -46,9 +54,10 @@ function initFunc(){
     const dirLight = new THREE.DirectionalLight('#192221',1) //  #192221
     basic3d.scene.add(dirLight)
     basic3d.initControls()
+    basic3d.controls.maxPolarAngle = Math.PI / 2 - 0.05
     addModel()
+    addPeople()
     addLight()
-    gui()
     
 }
 
@@ -72,6 +81,7 @@ function mouseClick(instersects:THREE.Intersection[],mouse:{x:number,y:number}){
 function gui(){
     dat = new datGui.GUI({})
     datItem = dat.add(sdObj,'opacity',0,1).name('隧道透明度').onChange(changeOpacity)
+    dat.add(sdObj,'firstPerson',false).name('移动人物').onChange(changeFirestPerson)
 }
 function changeOpacity(value:number){
     const sd = gltfGlobal.getObjectByName('suidao')
@@ -82,14 +92,23 @@ function changeOpacity(value:number){
     })
     
 }
-function test(value:number){
-    const sd = gltfGlobal.getObjectByName('floor_2')
-    sd?.traverse((child:any)=>{
-        if(child.isMesh){
-            child.material.map.repeat.set(value,20)
-        }
-    })
+function changeFirestPerson(value:boolean){
+    // basic3d.controls.dispose()
+    isPersonViewFlag.value=value
+    if (value){
+        // 引用第三人称
+        message.info('使用 W A S D 移动人物')
+        basic3d.threePersonControl = new ThreePersonControls(fObj,basic3d.mixer,animationMap,basic3d.controls,basic3d.camera,'Idle')
+        document.addEventListener('keydown', getKeyDownFun);
+        document.addEventListener('keyup', getKeyUpFun);
+    } else {
+        basic3d.camera.position.set(0, 10,40)
+        basic3d.initControls()
+        document.removeEventListener('keydown', getKeyDownFun);
+        document.removeEventListener('keyup', getKeyUpFun);
+    }
 }
+
 function handleBack(){
     router.push({name:'project'})
 }
@@ -119,6 +138,7 @@ function addModel(){
     t.offset.set(-1,1)
     const load = new GLTFLoader()
     load.load(`${TX_COS_URL}/models/suidao.glb`,gltf=>{
+    // load.load(`${TX_COS_URL}/suidao.glb`,gltf=>{
         console.log(gltf);
         gltfGlobal = gltf.scene
         const list:any[] = []
@@ -166,15 +186,37 @@ function addModel(){
     })
 }
 
+function addPeople(){
+    const fload = new FBXLoader()
+    fload.load(`${TX_COS_URL}/models/people.fbx`,fb=>{
+    // fload.load(`${TX_COS_URL}/people.fbx`,fb=>{
+        fObj=fb
+        fObj.scale.set(0.01,0.01,0.01)
+        fObj.position.set(5,0,23)
+        fObj.rotateY(160)
+        basic3d.scene.add(fObj)
+        // 动画
+        basic3d.mixer = new THREE.AnimationMixer(fObj)
+        fObj.animations[0].name="Walk"
+        const clips = fObj.animations
+        animationMap.set('Walk',basic3d.mixer.clipAction(clips[0]))
+        
+    })
+}
 onMounted(()=>{
     initFunc()
     
 })
 onActivated(()=>{
     const getMouseFun = basic3d.getMoseObj.bind(basic3d,mouseClick)
+    getKeyDownFun = basic3d.threeControlKeyDownEvent.bind(basic3d)
+    getKeyUpFun = basic3d.threeControlKeyUpEvent.bind(basic3d)
     window.addEventListener('mousemove',getMouseFun)
+    gui()
     onDeactivated(() => {
         window.removeEventListener('mousemove',getMouseFun)
+        isPersonViewFlag.value && document.removeEventListener('keydown', getKeyDownFun);
+        isPersonViewFlag.value && document.removeEventListener('keyup', getKeyUpFun);
         dat.destroy()
     })
 })

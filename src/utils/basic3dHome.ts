@@ -1,9 +1,11 @@
 import * as THREE from "three";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import {FirstPersonControls} from 'three/examples/jsm/controls/FirstPersonControls'
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import gsap from "gsap";
 import { MeshBasicMaterial } from "three";
+import { ThreePersonControls } from "./ThreePersonControls";
 const hdrUrl = 'api/hdr/'
 const imgUrl = 'api/imgs/'
 const glbUrl = 'api/'
@@ -16,7 +18,7 @@ class Basic3dHome {
   scene!: THREE.Scene;
   camera!: THREE.PerspectiveCamera;
   renderer!: THREE.WebGL1Renderer;
-  controls!: OrbitControls;
+  controls!: OrbitControls | FirstPersonControls;
   model!: THREE.Object3D;
   panzi: THREE.Object3D | null = null;
   mixer!: THREE.AnimationMixer;
@@ -42,6 +44,8 @@ class Basic3dHome {
   mouseMoveFlag: boolean=false;
   bindFunc!: any;
   timeline!: gsap.core.Timeline;
+  threePersonControl!:ThreePersonControls
+  keysPressed:Object={}
   constructor(selector: string, onFinish: (e:string) => void,isListen:boolean=true) {
     this.isListen=isListen
     this.container = document.getElementById(selector);
@@ -55,6 +59,7 @@ class Basic3dHome {
     this.onFinish = onFinish;
     this.removeMouseListener=this.removeMouseListeners
     this.requestAnimationId = null
+    // this.initFirstView()
   }
 
   init() {
@@ -77,6 +82,7 @@ class Basic3dHome {
       
       this.animationCamera()
     }
+    
   }
   loadBackHdr(){
     const textLoader = new THREE.TextureLoader()
@@ -221,10 +227,20 @@ class Basic3dHome {
     let delta = this.clock && this.clock.getDelta()
     this.mixer && this.mixer.update(delta)
     this.renderer.render(this.scene, this.camera);
+    this.controls && this.controls.update(delta);
+    // console.log(this.camera.position)
+    if (this.threePersonControl){
+      this.threePersonControl.update(delta,this.keysPressed)
+    }
+    // const caxyz = this.camera.position.clone()
+    // if(caxyz.y<1.7){
+    // }
+    // this.camera.position.setY(1.7)
+
   }
   animate() {
     this.requestAnimationId = window.requestAnimationFrame(this.animate.bind(this))
-    // this.controls.update();
+    
     this.mouseMoveAnimate()
     this.render()
   }
@@ -378,6 +394,31 @@ class Basic3dHome {
     } else {
       this.timeline.play()
     }
+  }
+
+  initFirstView(){
+    // 初始化视角
+    this.camera.position.set(5,2,25)
+    this.controls = new FirstPersonControls(this.camera,this.renderer.domElement)
+    this.controls.movementSpeed = 5
+    this.controls.lookSpeed = 0.05
+    this.controls.constrainVertical=true
+    // this.controls.enabled=false
+    this.controls.heightCoef=0.5
+    this.controls.verticalMin=1.0
+    this.controls.verticalMax=2.0
+    
+  }
+
+  threeControlKeyDownEvent(event:KeyboardEvent){
+    if (event.shiftKey && this.threePersonControl) {
+        this.threePersonControl.switchRunToggle()
+    } else {
+        (this.keysPressed as any)[event.key.toLowerCase()] = true
+    }
+  }
+  threeControlKeyUpEvent(event:KeyboardEvent){
+    (this.keysPressed as any)[event.key.toLowerCase()] = false
   }
 }
 
