@@ -56,13 +56,13 @@ export default defineConfig({
         {
           name:'pinia',
           var:'Pinia',
-          path:'https://cdn.jsdelivr.net/npm/pinia@2.0.14/dist/pinia.iife.min.js'
+          path:'https://cdn.staticfile.org/pinia/2.0.14/pinia.iife.prod.min.js'
         },
-        {
-          name:'vue-tsc',
-          var:'VueTs',
-          path:'https://cdn.jsdelivr.net/npm/vue-tsc@1.0.24/out/index.min.js'
-        },
+        // {
+        //   name:'vue-tsc',
+        //   var:'VueTs',
+        //   path:'https://cdn.jsdelivr.net/npm/vue-tsc@1.0.24/out/index.min.js'
+        // },
         {
           name:'datav-vue3',
           var:'DataV',
@@ -87,7 +87,7 @@ export default defineConfig({
           name:'cesium',
           var:'Cesium',
           path:'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/libs/cesium.min.js',
-          css:'https://cdn.jsdelivr.net/npm/cesium@1.102.0/Build/Cesium/Widgets/widgets.min.css'
+          css:'https://cdn.staticfile.org/cesium/1.102.0/Widgets/widgets.min.css'
         },
         {
           name:'naive',
