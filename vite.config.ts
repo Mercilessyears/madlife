@@ -35,7 +35,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    cesium(),
+    // cesium(),
     PluginImportToCDN({
       modules:[
         {
