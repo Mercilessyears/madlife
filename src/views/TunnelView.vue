@@ -137,8 +137,8 @@ function addModel(){
     t.repeat.set(3.5,20)
     t.offset.set(-1,1)
     const load = new GLTFLoader()
-    load.load(`${TX_COS_URL}/models/suidao.glb`,gltf=>{
-    // load.load(`${TX_COS_URL}/suidao.glb`,gltf=>{
+    // load.load(`${TX_COS_URL}/models/suidao.glb`,gltf=>{
+    load.load(`${TX_COS_URL}/suidao.glb`,gltf=>{
         console.log(gltf);
         gltfGlobal = gltf.scene
         const list:any[] = []
@@ -188,8 +188,8 @@ function addModel(){
 
 function addPeople(){
     const fload = new FBXLoader()
-    fload.load(`${TX_COS_URL}/models/people.fbx`,fb=>{
-    // fload.load(`${TX_COS_URL}/people.fbx`,fb=>{
+    // fload.load(`${TX_COS_URL}/models/people.fbx`,fb=>{
+    fload.load(`${TX_COS_URL}/people.fbx`,fb=>{
         fObj=fb
         fObj.scale.set(0.01,0.01,0.01)
         fObj.position.set(5,0,23)
@@ -217,7 +217,10 @@ onActivated(()=>{
         window.removeEventListener('mousemove',getMouseFun)
         isPersonViewFlag.value && document.removeEventListener('keydown', getKeyDownFun);
         isPersonViewFlag.value && document.removeEventListener('keyup', getKeyUpFun);
-        dat.destroy()
+        if (dat) {
+            // dat.destroy()
+            dat.hide()
+        }
     })
 })
 onBeforeUnmount(() => {
@@ -225,7 +228,6 @@ onBeforeUnmount(() => {
     basic3d.clearThree()
     basic3d.scene = null
     basic3d = null
-    
 })
 </script>
 
