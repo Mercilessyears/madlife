@@ -86,7 +86,8 @@ export default defineConfig({
         {
           name:'cesium',
           var:'Cesium',
-          path:'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/libs/cesium.min.js',
+          // path:'https://web-project-1301218253.cos.ap-chengdu.myqcloud.com/libs/cesium.min.js',
+          path:'https://cdn.staticfile.org/cesium/1.102.0/Cesium.min.js',
           css:'https://cdn.staticfile.org/cesium/1.102.0/Widgets/widgets.min.css'
         },
         {
