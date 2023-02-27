@@ -59,7 +59,7 @@ import { getGlbData, getTxData } from '@/myApi/scene';
 import { TX_COS_URL } from '@/enums/commEnum';
 const menu = [
     {name:'主页',path:'/scene',key:'1'},
-    {name:'项目',path:'/project',key:'2'},
+    {name:'示例',path:'/project',key:'2'},
 ]
 const urllist=ref([
     {name:'love.jpg',text:'永远爱编程',src:`${TX_COS_URL}/imgs/love.jpg`},
